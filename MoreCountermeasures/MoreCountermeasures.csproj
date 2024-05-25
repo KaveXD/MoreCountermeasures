@@ -64,6 +64,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="HarmonyPatches.cs" />
+    <Compile Include="HpBolChaff.cs" />
     <Compile Include="HpBolFlare.cs" />
     <Compile Include="HpCmPod.cs" />
     <Compile Include="Main.cs" />
@@ -72,7 +73,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>IF EXIST "C:\Program Files (x86)\Steam\steamapps\common\VTOL VR\VTOLVR_ModLoader\VTOLVR-ModLoader.exe" (
-copy "$(TargetPath)" "E:\VTOLVR MODS\My Mods\More Countermeasures\Builds\MoreCountermeasures.dll"
+copy "$(TargetPath)" "E:\VTOLVR MODS\My Mods\MoreCountermeasures\Builds\MoreCountermeasures.dll"
 )</PostBuildEvent>
   </PropertyGroup>
 </Project>

@@ -12,7 +12,7 @@ public class HpBolFlare : CWB_HPEquipExtension
     public override void OnEquip()
     {
         base.OnEquip();
-        Initialize();
+        Initialize(); //run my custom method after the original methdo
     }
     public override void OnUnequip()
     {
@@ -109,7 +109,7 @@ public class HpBolFlare : CWB_HPEquipExtension
         flares.ejectTransforms = flares.ejectTransforms.Append(cmsTransform).ToArray();
 
         int idxToRemove = Array.IndexOf(flares.ejectTransforms, cmsTransform);
-        Debug.Log("idxToRemove" +  idxToRemove);
+        //Debug.Log("idxToRemove" +  idxToRemove);
 
         flares.ejectTransforms = flares.ejectTransforms.Where((val,idx) => idx != idxToRemove).ToArray();
         countsField.SetValue(flares, countsValue.Where((val, idx) => idx != idxToRemove).ToArray());

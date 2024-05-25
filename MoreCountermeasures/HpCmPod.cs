@@ -5,7 +5,6 @@ using System;
 public class HpCmPod : HPEquippable
 {
     WeaponManager wm;
-    CountermeasureManager cmm;
     [SerializeField] int maxCountermeasures;
     [SerializeField] Transform cmsTransform;
 
