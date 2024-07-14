@@ -64,8 +64,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="HarmonyPatches.cs" />
+    <Compile Include="HpBolCms.cs" />
     <Compile Include="HpBolChaff.cs" />
     <Compile Include="HpBolFlare.cs" />
+    <Compile Include="HpChaffPod.cs" />
     <Compile Include="HpCmPod.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

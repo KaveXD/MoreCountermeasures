@@ -18,6 +18,7 @@ public class HpBolFlare : CWB_HPEquipExtension
     {
         base.OnUnequip();
 
+        Dequip();
     }
     public override void OnConfigAttach(LoadoutConfigurator configurator)
     {
@@ -27,6 +28,7 @@ public class HpBolFlare : CWB_HPEquipExtension
     public override void OnConfigDetach(LoadoutConfigurator configurator)
     {
         base.OnConfigDetach(configurator);
+        Dequip(configurator);
     }
     public void Initialize(LoadoutConfigurator conf = null)
     {

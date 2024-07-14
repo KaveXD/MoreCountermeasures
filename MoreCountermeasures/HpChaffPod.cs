@@ -2,11 +2,13 @@ using System.Linq;
 using UnityEngine;
 using System.Reflection;
 using System;
-public class HpCmPod : HPEquippable
+public class HpChaffPod : HPEquippable
 {
     WeaponManager wm;
-    [SerializeField] public int maxCountermeasures;
+    [SerializeField] public int maxChaff;
     private bool _changedCMS = false;
+
+
     protected override void OnEquip()
     {
         base.OnEquip();
@@ -45,30 +47,10 @@ public class HpCmPod : HPEquippable
         }
 
 
-        cmm.chaffCMs[0].maxCount = maxCountermeasures;
-        cmm.chaffCMs[0].count = maxCountermeasures-1;
-        cmm.flareCMs[0].maxCount = maxCountermeasures;
-        cmm.flareCMs[0].count = maxCountermeasures-1;
-        
-        _changedCMS = true; 
+        cmm.chaffCMs[0].maxCount = maxChaff;
+        cmm.chaffCMs[0].count = maxChaff - 1;
 
-
-        //FlareCountermeasure flares = cmm.flareCMs[0];
-
-        //Type counterMeasureType = typeof(FlareCountermeasure);
-
-        //FieldInfo countsField =  counterMeasureType.GetField("counts", BindingFlags.NonPublic | BindingFlags.Instance);
-
-        //int[] countsValue = (int[])countsField.GetValue(flares);
-
-
-        //countsField.SetValue(flares, countsValue.Append(160).ToArray());
-
-
-        //countsValue = (int[])countsField.GetValue(flares);
-
-        //flares.ejectTransforms = flares.ejectTransforms.Append(cmsTransform).ToArray();
-
+        _changedCMS = true;
 
     }
     public void Dequip(LoadoutConfigurator conf = null)
@@ -77,6 +59,7 @@ public class HpCmPod : HPEquippable
         {
             return;
         }
+
         wm = conf ? conf.wm : weaponManager;
 
         if (!wm)
@@ -102,11 +85,8 @@ public class HpCmPod : HPEquippable
             Debug.Log("FLare:" + cms.ToString());
         }
 
-        cmm.chaffCMs[0].count -= maxCountermeasures - 1;
-        cmm.chaffCMs[0].maxCount -= maxCountermeasures;
-        cmm.flareCMs[0].count -= maxCountermeasures - 1;
-        cmm.flareCMs[0].maxCount -= maxCountermeasures;
-        _changedCMS = false;
+        cmm.chaffCMs[0].count -= maxChaff - 1;
+        cmm.chaffCMs[0].maxCount -= maxChaff;
 
         if (conf == null)
         {
