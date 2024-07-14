@@ -8,8 +8,8 @@ public class HpBolCms : CWB_HPEquipExtension
     WeaponManager wm;
     [SerializeField] public int addedFlares;
     [SerializeField] public int addedChaff;
-    [SerializeField] public Transform cmsTransform;
-    private ChaffLauncher _launcher;
+    [SerializeField] public Transform[] cmsTransform;
+    private ChaffLauncher[] _launcher = Array.Empty<ChaffLauncher>();
 
     private bool _changedCMS = false;
     public override void OnEquip()
@@ -52,7 +52,7 @@ public class HpBolCms : CWB_HPEquipExtension
             return;
         }
 
-        if (!cmsTransform)
+        if (cmsTransform.Length == 0)
         {
             Debug.Log("MoreCountermeasures:No Valid Transform");
             return;
@@ -60,28 +60,34 @@ public class HpBolCms : CWB_HPEquipExtension
 
         if(addedChaff > 0)
         {
-            //This code adds another launcher to the mix
-            ChaffCountermeasure chaff = cmm.chaffCMs[0];
-            ChaffLauncher existingLauncher = chaff.GetComponentInChildren<ChaffLauncher>();
-            //clone the existing launchers so I dont have to add the gameobject in Unity every itme
+            for (int i = 0; i < cmsTransform.Length; i++)
+            {
+                //This code adds another launcher to the mix
+                ChaffCountermeasure chaff = cmm.chaffCMs[0];
+                ChaffLauncher existingLauncher = chaff.GetComponentInChildren<ChaffLauncher>();
+                //clone the existing launchers so I dont have to add the gameobject in Unity every itme
 
-            _launcher = Instantiate(existingLauncher, cmsTransform.position, cmsTransform.rotation, chaff.transform);
+                ChaffLauncher tempLauncher = Instantiate(existingLauncher, cmsTransform[i].position, cmsTransform[i].rotation, chaff.transform);
+                
+                _launcher = _launcher.Append(tempLauncher).ToArray();
 
-            //this is just debugging so i can grab the values in dnSpy
-            ChaffLauncher[] allLaunchers = chaff.GetComponentsInChildren<ChaffLauncher>();
-
-
-            chaff.maxCount += addedChaff;
-            //chaff.count += addedChaff;
+                //this is just debugging so i can grab the values in dnSpy
+                ChaffLauncher[] allLaunchers = chaff.GetComponentsInChildren<ChaffLauncher>();
 
 
-            //gets the value of the internal counts[] array
-            Type counterMeasureType = typeof(ChaffCountermeasure);
-            FieldInfo countsField = counterMeasureType.GetField("counts", BindingFlags.NonPublic | BindingFlags.Instance);
-            int[] countsValue = (int[])countsField.GetValue(chaff);
+                chaff.maxCount += addedChaff;
+                //chaff.count += addedChaff;
 
-            //adds another element to the array with the value of our countermeasures
-            countsField.SetValue(chaff, countsValue.Append(addedChaff).ToArray());
+
+                //gets the value of the internal counts[] array
+                Type counterMeasureType = typeof(ChaffCountermeasure);
+                FieldInfo countsField = counterMeasureType.GetField("counts", BindingFlags.NonPublic | BindingFlags.Instance);
+                int[] countsValue = (int[])countsField.GetValue(chaff);
+
+                //adds another element to the array with the value of our countermeasures
+                countsField.SetValue(chaff, countsValue.Append(addedChaff).ToArray());
+            }
+
         }
 
 
@@ -89,39 +95,25 @@ public class HpBolCms : CWB_HPEquipExtension
 
         if(addedFlares > 0)
         {
-            FlareCountermeasure flares = cmm.flareCMs[0];
+            for (int i = 0; i < cmsTransform.Length; i++)
+            {
+                FlareCountermeasure flares = cmm.flareCMs[0];
 
-            Type cmsFlareType = typeof(FlareCountermeasure);
-            FieldInfo flareField = cmsFlareType.GetField("counts", BindingFlags.NonPublic | BindingFlags.Instance);
-            int[] flareValue = (int[])flareField.GetValue(flares);
+                Type cmsFlareType = typeof(FlareCountermeasure);
+                FieldInfo flareField = cmsFlareType.GetField("counts", BindingFlags.NonPublic | BindingFlags.Instance);
+                int[] flareValue = (int[])flareField.GetValue(flares);
 
 
-            flareField.SetValue(flares, flareValue.Append(0).ToArray());
+                flareField.SetValue(flares, flareValue.Append(0).ToArray());
 
-            flares.maxCount += addedFlares;
+                flares.maxCount += addedFlares;
 
-            //countsValue = (int[])countsField.GetValue(flares);
+                //countsValue = (int[])countsField.GetValue(flares);
 
-            flares.ejectTransforms = flares.ejectTransforms.Append(cmsTransform).ToArray();
+                flares.ejectTransforms = flares.ejectTransforms.Append(cmsTransform[i]).ToArray();
+            }
+
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         _changedCMS = true;
 
     }
@@ -151,62 +143,64 @@ public class HpBolCms : CWB_HPEquipExtension
 
         if(addedChaff > 0)
         {
-            ChaffCountermeasure chaff = cmm.chaffCMs[0];
-
-            Type counterMeasureType = typeof(FlareCountermeasure);
-            FieldInfo countsField = counterMeasureType.GetField("counts", BindingFlags.NonPublic | BindingFlags.Instance);
-            int[] countsValue = (int[])countsField.GetValue(chaff);
-
-            ChaffLauncher[] launchers = chaff.GetComponentsInChildren<ChaffLauncher>();
-
-            int idxToRemove = Array.IndexOf(launchers, _launcher);
-
-
-            if (idxToRemove == -1)
+            for (int i = 0; i < cmsTransform.Length; i++) 
             {
-                Debug.Log("Invalid Index when trying to remove BOL Pod");
-                return;
+                ChaffCountermeasure chaff = cmm.chaffCMs[0];
+
+                Type counterMeasureType = typeof(FlareCountermeasure);
+                FieldInfo countsField = counterMeasureType.GetField("counts", BindingFlags.NonPublic | BindingFlags.Instance);
+                int[] countsValue = (int[])countsField.GetValue(chaff);
+
+                ChaffLauncher[] launchers = chaff.GetComponentsInChildren<ChaffLauncher>();
+
+                int idxToRemove = Array.IndexOf(launchers, _launcher[i]);
+
+
+                if (idxToRemove == -1)
+                {
+                    Debug.Log("Invalid Index when trying to remove BOL Pod");
+                    return;
+                }
+
+                countsField = counterMeasureType.GetField("counts", BindingFlags.NonPublic | BindingFlags.Instance);
+                countsValue = countsValue.Where((val, idx) => idx != idxToRemove).ToArray();
+                countsField.SetValue(chaff, countsValue);
+                chaff.maxCount -= addedChaff;
+                _launcher[i].transform.parent = null;
+
+                launchers = chaff.GetComponentsInChildren<ChaffLauncher>();
+
             }
 
-            countsField = counterMeasureType.GetField("counts", BindingFlags.NonPublic | BindingFlags.Instance);
-            countsValue = countsValue.Where((val, idx) => idx != idxToRemove).ToArray();
-            countsField.SetValue(chaff, countsValue);
-            chaff.maxCount -= addedChaff;
-            _launcher.transform.parent = null;
 
-            launchers = chaff.GetComponentsInChildren<ChaffLauncher>();
         }
 
         if(addedFlares > 0)
         {
-            FlareCountermeasure flares = cmm.flareCMs[0];
+            for (int i = 0;i < cmsTransform.Length; i++)
+            {
+                FlareCountermeasure flares = cmm.flareCMs[0];
 
-            Type counterMeasureType = typeof(FlareCountermeasure);
-            FieldInfo countsField = counterMeasureType.GetField("counts", BindingFlags.NonPublic | BindingFlags.Instance);
-            int[] countsValue = (int[])countsField.GetValue(flares);
+                Type counterMeasureType = typeof(FlareCountermeasure);
+                FieldInfo countsField = counterMeasureType.GetField("counts", BindingFlags.NonPublic | BindingFlags.Instance);
+                int[] countsValue = (int[])countsField.GetValue(flares);
 
-            //countsValue = (int[])countsField.GetValue(flares);
+                //countsValue = (int[])countsField.GetValue(flares);
 
-            flares.ejectTransforms = flares.ejectTransforms.Append(cmsTransform).ToArray();
+                flares.ejectTransforms = flares.ejectTransforms.Append(cmsTransform[i]).ToArray();
 
-            int idxToRemove = Array.IndexOf(flares.ejectTransforms, cmsTransform);
-            //Debug.Log("idxToRemove" +  idxToRemove);
+                int idxToRemove = Array.IndexOf(flares.ejectTransforms, cmsTransform[i]);
+                //Debug.Log("idxToRemove" +  idxToRemove);
 
-            flares.ejectTransforms = flares.ejectTransforms.Where((val, idx) => idx != idxToRemove).ToArray();
-            countsField.SetValue(flares, countsValue.Where((val, idx) => idx != idxToRemove).ToArray());
-            flares.maxCount -= addedFlares;
+                flares.ejectTransforms = flares.ejectTransforms.Where((val, idx) => idx != idxToRemove).ToArray();
+                countsField.SetValue(flares, countsValue.Where((val, idx) => idx != idxToRemove).ToArray());
+                flares.maxCount -= addedFlares;
+            }
+
         }
 
 
-
-
         _changedCMS = false;
-
-
-
-
-
-
 
         if (conf == null)
         {
