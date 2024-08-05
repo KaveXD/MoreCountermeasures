@@ -1,0 +1,11 @@
+﻿{
+  "Title": "MoreCountermeasures",
+  "Description": "More Countermeasures and BOL Pod ",
+  "PreviewImageUrl": "https://vtolvr-mods.com/static/img/Logo.png",
+  "MetaData": {
+    "DllName": "MoreCountermeasures.dll",
+    "AllowLoadOnStart": true,
+    "ShowOnMainList": true,
+    "DllHash": ""
+  }
+}
